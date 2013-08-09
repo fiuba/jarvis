@@ -15,7 +15,7 @@ class DropboxDownloadCommand < Command
     session.set_request_token(ENV['DROPBOX_REQUEST_TOKEN_KEY'], ENV['DROPBOX_REQUEST_TOKEN_SECRET'])
     session.set_access_token(ENV['DROPBOX_AUTH_TOKEN_KEY'], ENV['DROPBOX_AUTH_TOKEN_SECRET'])
     client = DropboxClient.new(session, :app_folder)
-		output = client.get_file(file_path)
+		self.output = client.get_file(file_path)
 		true
 	end
 end
