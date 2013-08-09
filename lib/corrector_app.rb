@@ -73,7 +73,7 @@ class CorrectorApp
 		puts "Resultado: #{cmd_result}"
 		puts cmd.output
 
-		#archive_files(id)
+		archive_files(id)
 
 		report_result(id, cmd_result, cmd.output)
 
@@ -81,7 +81,7 @@ class CorrectorApp
 	end
 
 	def run
-		execute_correction
+		run_loop
 	end
 
 	def run_loop
