@@ -2,6 +2,7 @@ require_relative './command.rb'
 require_relative './rest_command.rb'
 require_relative './unzip_command.rb'
 require_relative './dropbox_downloader_command.rb'
+require 'json'
 require 'securerandom'
 
 class CorrectorApp
@@ -80,7 +81,7 @@ class CorrectorApp
 	end
 
 	def run
-		run_loop
+		execute_correction
 	end
 
 	def run_loop
