@@ -4,10 +4,20 @@ require_relative './unzip_command.rb'
 require_relative './dropbox_downloader_command.rb'
 require 'json'
 require 'securerandom'
+require 'logger'
+require 'debugger'
 
 class CorrectorApp
 
 	attr_reader :is_idle
+
+	def initialize
+		@logger = Logger.new(STDOUT)
+		@logger.level = Logger::INFO
+		@logger.formatter = proc do |severity, datetime, progname, msg|
+   		"#{datetime}:#{severity} #{msg}\n"
+		end
+	end
 
 	def get_and_unzip_file(id, file_path, target_file_name)
 		cmd = Command.with_statement("mkdir #{id}")
@@ -51,11 +61,19 @@ class CorrectorApp
 
 	def execute_correction
 
+		@logger.info 'Checking for pending tasks.'
+
 		# get task details
 		url = "#{ENV['ALFRED_API_URL']}/next_task"
 		cmd = RestCommand.for_url(url)
 		cmd_result = cmd.execute
 		correction_data = JSON.parse cmd.output
+		
+		if correction_data.empty?
+			@logger.info 'No pending tasks found.'
+			return
+		end
+
 		id = correction_data['id']
 		
 		get_and_unzip_file(id, correction_data['solution_file_path'], 'solution')
@@ -70,21 +88,25 @@ class CorrectorApp
 		cmd = Command.with_statement("cd #{id} \n bash test_script.sh")
 		cmd_result = cmd.execute
 
-		puts "Resultado: #{cmd_result}"
-		puts cmd.output
+		@logger.debug "Task executed, result:#{cmd_result}, output: #{cmd.output}"
+		@logger.info "Task executed, result:#{cmd_result}."
 
+		@logger.info 'Archiving files.'
 		archive_files(id)
 
+		@logger.info 'Publishing task results.'
 		report_result(id, cmd_result, cmd.output)
 
-		puts "done"
+		@logger.info 'Task proccessing complete.'
 	end
 
 	def run
+		#execute_correction
 		run_loop
 	end
 
 	def run_loop
+		@logger.info 'Starting working loop.'
 		is_idle = true
 		loop do
 			sleep 1
@@ -94,6 +116,7 @@ class CorrectorApp
 				is_idle = true
 			end
 		end
+		@logger.info 'Finishing working loop.'
 	end
 
 end
