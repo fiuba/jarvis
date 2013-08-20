@@ -63,6 +63,8 @@ class CorrectorApp
 
 		@logger.info 'Checking for pending tasks.'
 
+		cmd_result = 'undefined'
+
 		# get task details
 		url = "#{ENV['ALFRED_API_URL']}/next_task"
 		cmd = RestCommand.for_url(url)
@@ -75,28 +77,36 @@ class CorrectorApp
 		end
 
 		id = correction_data['id']
-		
-		get_and_unzip_file(id, correction_data['solution_file_path'], 'solution')
-		get_and_unzip_file(id, correction_data['test_file_path'], 'test')
-		
-		# create test_script file
-		File.write("#{id}/test_script.sh", correction_data['test_script'])		
-		
-		prepare_pharo_image(id)
 
-		# execute the test
-		cmd = Command.with_statement("cd #{id} \n bash test_script.sh")
-		cmd_result = cmd.execute
+		begin		
+			get_and_unzip_file(id, correction_data['solution_file_path'], 'solution')
+			get_and_unzip_file(id, correction_data['test_file_path'], 'test')
+			
+			test_script_data = correction_data['test_script']
+			# create test_script file
+			f = File.new("#{id}/test_script.sh", "w+b")		
+			f.write(test_script_data)
+			
+			prepare_pharo_image(id)
 
-		@logger.debug "Task executed, result:#{cmd_result}, output: #{cmd.output}"
-		@logger.info "Task executed, result:#{cmd_result}."
+			# execute the test
+			cmd = Command.with_statement("cd #{id} \n bash test_script.sh")
+			cmd_result = cmd.execute
+			cmd_output = cmd.output? 'success' : 'failed'
 
-		@logger.info 'Archiving files.'
-		archive_files(id)
+			@logger.debug "Task executed, result:#{cmd_result}, output: #{cmd.output}"
+			@logger.info "Task executed, result:#{cmd_result}."
 
-		@logger.info 'Publishing task results.'
-		report_result(id, cmd_result, cmd.output)
-
+			@logger.info 'Archiving files.'
+			archive_files(id)
+		rescue
+			@logger.error 'Task proccessing error'
+		ensure
+			@logger.info 'Publishing task results.'
+			cmd_result = 'undefined'
+			cmd_output = 'Error while processing'
+			report_result(id, cmd_result, cmd_output)
+		end
 	end
 
 	def run
