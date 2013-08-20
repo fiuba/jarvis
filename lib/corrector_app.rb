@@ -97,7 +97,6 @@ class CorrectorApp
 		@logger.info 'Publishing task results.'
 		report_result(id, cmd_result, cmd.output)
 
-		@logger.info 'Task proccessing complete.'
 	end
 
 	def run
@@ -112,8 +111,15 @@ class CorrectorApp
 			sleep 1
 			if (is_idle)
 				is_idle = false
-				execute_correction
-				is_idle = true
+				begin
+					@logger.info 'Task processing started.'
+					execute_correction
+					@logger.info 'Task successfully proccessed.\n'
+				rescue 
+					@logger.info "Task proccessing failed with errors: #{$!}\n"
+				ensure
+					is_idle = true
+				end
 			end
 		end
 		@logger.info 'Finishing working loop.'
