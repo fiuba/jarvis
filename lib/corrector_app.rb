@@ -92,7 +92,7 @@ class CorrectorApp
 			# execute the test
 			cmd = Command.with_statement("cd #{id} \n bash test_script.sh")
 			cmd_result = cmd.execute
-			cmd_output = cmd.output? 'success' : 'failed'
+			cmd_output = cmd.output ? 'success' : 'failed'
 
 			@logger.debug "Task executed, result:#{cmd_result}, output: #{cmd.output}"
 			@logger.info "Task executed, result:#{cmd_result}."
