@@ -13,7 +13,7 @@ class CorrectorApp
 
 	def initialize
 		@logger = Logger.new(STDOUT)
-		@logger.level = Logger::INFO
+		@logger.level = Logger::DEBUG
 		@logger.formatter = proc do |severity, datetime, progname, msg|
    		"#{datetime}:#{severity} #{msg}\n"
 		end
@@ -63,7 +63,9 @@ class CorrectorApp
 
 		@logger.info 'Checking for pending tasks.'
 
-		cmd_result = 'undefined'
+		task_result = 'undefined'
+		task_output = 'Error while processing'
+
 
 		# get task details
 		url = "#{ENV['ALFRED_API_URL']}/next_task"
@@ -91,21 +93,20 @@ class CorrectorApp
 
 			# execute the test
 			cmd = Command.with_statement("cd #{id} \n bash test_script.sh")
-			cmd_result = cmd.execute ? 'passed' : 'failed'
-			cmd_output = cmd.output
+			task_result = cmd.execute ? 'passed' : 'failed'
+			task_output = cmd.output
 
-			@logger.debug "Task executed, result:#{cmd_result}, output: #{cmd.output}"
-			@logger.info "Task executed, result:#{cmd_result}."
+			@logger.debug "Task executed, result:#{task_result}, output: #{cmd.output}"
+			@logger.info "Task executed, result:#{task_result}."
 
 			@logger.info 'Archiving files.'
 			archive_files(id)
 		rescue
-			@logger.error 'Task proccessing error'
+			task_output = $!
+			@logger.error "Task proccessing error:#{task_output}"
 		ensure
 			@logger.info 'Publishing task results.'
-			cmd_result = 'undefined'
-			cmd_output = 'Error while processing'
-			report_result(id, cmd_result, cmd_output)
+			report_result(id, task_result, task_output)
 		end
 	end
 
