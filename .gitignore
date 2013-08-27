@@ -20,6 +20,6 @@ doc/
 *.image
 *.changes
 *.sources
-.env
+.env*
 .DS_Store
 old-*
