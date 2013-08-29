@@ -13,7 +13,7 @@ class CorrectorApp
 
 	def initialize
 		@logger = Logger.new(STDOUT)
-		@logger.level = Logger::DEBUG
+		@logger.level = ENV['LOG_LEVEL'] || Logger::DEBUG
 		@logger.formatter = proc do |severity, datetime, progname, msg|
    		"#{datetime}:#{severity} #{msg}\n"
 		end

@@ -16,5 +16,5 @@ export DROPBOX_AUTH_TOKEN_KEY=
 export DROPBOX_AUTH_TOKEN_SECRET=
 
 cd lib
-ruby 
+ruby corrector_app.rb
 
