@@ -98,15 +98,14 @@ class CorrectorApp
 
 			@logger.debug "Task executed, result:#{task_result}, output: #{cmd.output}"
 			@logger.info "Task executed, result:#{task_result}."
-
-			@logger.info 'Archiving files.'
-			archive_files(id)
 		rescue
 			task_output = $!
 			@logger.error "Task proccessing error:#{task_output}"
 		ensure
 			@logger.info 'Publishing task results.'
 			report_result(id, task_result, task_output)
+			@logger.info 'Archiving files.'
+			archive_files(id)
 		end
 	end
 
@@ -125,10 +124,12 @@ class CorrectorApp
 				begin
 					@logger.info 'Task processing started.'
 					execute_correction
-					@logger.info 'Task successfully proccessed.\n'
+					@logger.info 'Task successfully proccessed.'
 				rescue 
 					@logger.info "Task proccessing failed with errors: #{$!}\n"
 				ensure
+					@logger.info '-----------------------------'
+					@logger.info ' '
 					is_idle = true
 				end
 			end
