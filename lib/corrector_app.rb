@@ -85,6 +85,7 @@ class CorrectorApp
 			get_and_unzip_file(id, correction_data['test_file_path'], 'test')
 			
 			test_script_data = correction_data['test_script']
+			test_script_data = test_script_data.gsub("\r\n","\n")
 			# create test_script file
 			f = File.new("#{id}/test_script.sh", "w+b")		
 			f.write(test_script_data)
@@ -95,6 +96,7 @@ class CorrectorApp
 			cmd = Command.with_statement("cd #{id} \n bash test_script.sh")
 			task_result = cmd.execute ? 'passed' : 'failed'
 			task_output = cmd.output
+			puts task_result
 
 			@logger.debug "Task executed, result:#{task_result}, output: #{cmd.output}"
 			@logger.info "Task executed, result:#{task_result}."
@@ -105,7 +107,7 @@ class CorrectorApp
 			@logger.info 'Publishing task results.'
 			report_result(id, task_result, task_output)
 			@logger.info 'Archiving files.'
-			archive_files(id)
+			#archive_files(id)
 		end
 	end
 
