@@ -6,8 +6,11 @@ GEM
     dropbox-sdk (1.5.1)
       json
     json (1.8.0)
+    mime-types (1.25)
     multi_json (1.7.7)
     rake (10.1.0)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
@@ -31,6 +34,7 @@ PLATFORMS
 DEPENDENCIES
   dropbox-sdk (= 1.5.1)
   rake
+  rest-client
   rspec
   rspec_junit_formatter
   simplecov

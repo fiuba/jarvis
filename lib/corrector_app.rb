@@ -20,7 +20,7 @@ class CorrectorApp
 	end
 
 	def get_and_unzip_file(id, file_path, target_file_name)
-		cmd = Command.with_statement("mkdir #{id}")
+		cmd = Command.with_statement("mkdir -p #{id}")
 		cmd_result = cmd.execute
 
 		# download solution file
@@ -89,6 +89,7 @@ class CorrectorApp
 			# create test_script file
 			f = File.new("#{id}/test_script.sh", "w+b")		
 			f.write(test_script_data)
+      f.close()
 			
 			prepare_pharo_image(id)
 
