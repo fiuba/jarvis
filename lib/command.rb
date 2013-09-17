@@ -21,7 +21,9 @@ class Command
 	def execute 
 		puts "about executing: #{statement}"
 		@output = `#{statement}`
-		$?.success?
+		result = $?.success?
+		puts result
+		result
 	end
 
 end
