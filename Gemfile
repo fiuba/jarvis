@@ -6,6 +6,7 @@ gem 'rake'
 
 gem 'dropbox-sdk', '1.5.1', :require => 'dropbox_sdk'
 gem 'rest-client'
+gem 'dotenv', require: false
 
 group :test do
 	gem 'simplecov'
