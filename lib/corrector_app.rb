@@ -1,14 +1,13 @@
-require_relative './command.rb'
-require_relative './rest_command.rb'
-require_relative './unzip_command.rb'
-require_relative './dropbox_downloader_command.rb'
+require 'commands/command'
+require 'commands/rest_command'
+require 'commands/unzip_command'
+require 'commands/dropbox_downloader_command'
 require 'json'
 require 'securerandom'
 require 'logger'
-require 'debugger'
+
 
 class CorrectorApp
-
 	attr_reader :is_idle
 
 	def initialize
@@ -51,8 +50,8 @@ class CorrectorApp
 	end
 
 	def report_result(id, result, output)
-		url = "#{ENV['ALFRED_API_URL']}/task_result" 
-		RestClient.post( url, 
+		url = "#{ENV['ALFRED_API_URL']}/task_result"
+		RestClient.post( url,
 		  {
 		    :id => id,
 		    :test_result => result,
@@ -72,7 +71,7 @@ class CorrectorApp
 		cmd = RestCommand.for_url(url)
 		cmd_result = cmd.execute
 		correction_data = JSON.parse cmd.output
-		
+
 		if correction_data.empty?
 			@logger.info 'No pending tasks found.'
 			return
@@ -80,17 +79,17 @@ class CorrectorApp
 
 		id = correction_data['id']
 
-		begin		
+		begin
 			get_and_unzip_file(id, correction_data['solution_file_path'], 'solution')
 			get_and_unzip_file(id, correction_data['test_file_path'], 'test')
-			
+
 			test_script_data = correction_data['test_script']
 			test_script_data = test_script_data.gsub("\r\n","\n")
 			# create test_script file
-			f = File.new("#{id}/test_script.sh", "w+b")		
+			f = File.new("#{id}/test_script.sh", "w+b")
 			f.write(test_script_data)
       f.close()
-			
+
 			prepare_pharo_image(id)
 
 			# execute the test
@@ -128,7 +127,7 @@ class CorrectorApp
 					@logger.info 'Task processing started.'
 					execute_correction
 					@logger.info 'Task successfully proccessed.'
-				rescue 
+				rescue
 					@logger.info "Task proccessing failed with errors: #{$!}\n"
 				ensure
 					@logger.info '-----------------------------'
@@ -139,7 +138,4 @@ class CorrectorApp
 		end
 		@logger.info 'Finishing working loop.'
 	end
-
 end
-
-CorrectorApp.new.run
