@@ -23,10 +23,13 @@ class CorrectorApp
 		cmd = Command.with_statement("mkdir -p #{id}")
 		cmd_result = cmd.execute
 
+		@logger.info 'About downloading file'
+		@logger.info ENV['DROPBOX_APP_KEY']
 		# download solution file
 		cmd = DropboxDownloadCommand.forFileAt(file_path)
 		cmd_result = cmd.execute
 		File.write("#{id}/#{target_file_name}.zip", cmd.output)
+		@logger.info 'file downloaded'
 
 		cmd = UnzipCommand.forFileNamed("#{id}/#{target_file_name}.zip")
 		cmd.target_dir = "#{id}"
@@ -40,8 +43,8 @@ class CorrectorApp
 		cmd = Command.with_statement("cp Pharo-2.changes #{id}/Pharo-2.changes")
 		cmd_result = cmd.execute
 
-		cmd = Command.with_statement("cp PharoV20.sources #{id}/PharoV20.sources")
-		cmd_result = cmd.execute
+		#cmd = Command.with_statement("cp PharoV20.sources #{id}/PharoV20.sources")
+		#cmd_result = cmd.execute
 	end
 
 	def archive_files(id)
@@ -52,17 +55,18 @@ class CorrectorApp
 
 	def report_result(id, result, output)
 		url = "#{ENV['ALFRED_API_URL']}/task_result" 
+=begin
 		RestClient.post( url, 
 		  {
 		    :id => id,
 		    :test_result => result,
 		    :test_output => output} , { :api_key => ENV['ALFRED_API_KEY'] })
+=end		    
 	end
 
 	def execute_correction
 
 		@logger.info 'Checking for pending tasks.'
-
 		task_result = 'undefined'
 		task_output = 'Error while processing'
 
