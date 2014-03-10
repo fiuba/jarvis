@@ -33,6 +33,7 @@ Deploy
     sudo cp extras/god /etc/init.d/god
     sudo chmod +x /etc/init.d/god
     ```
+1. Create a god config file for jarvis based on extras/jarvis.god.template replacing **&lt;full path to jarvis.rb&gt;** with jarvis' deployment dir
 1. Create a symlink for the ```jarvis.god``` file to the global god config dir:
 
     ```ln -s jarvis.god /etc/god```

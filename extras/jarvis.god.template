@@ -1,5 +1,5 @@
 God.watch do |w|
   w.name = "jarvis"
-  w.start = "ruby jarvis.rb"
+  w.start = "ruby <full path to jarvis.rb>/jarvis.rb"
   w.keepalive
 end
