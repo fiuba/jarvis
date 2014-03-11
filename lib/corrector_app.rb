@@ -12,6 +12,7 @@ class CorrectorApp
 	attr_reader :is_idle
 
 	def initialize
+		@is_idle = false
 		@logger = Logger.new(STDOUT)
 		@logger.level = ENV['LOG_LEVEL'] || Logger::DEBUG
 		@logger.formatter = proc do |severity, datetime, progname, msg|
@@ -55,13 +56,12 @@ class CorrectorApp
 
 	def report_result(id, result, output)
 		url = "#{ENV['ALFRED_API_URL']}/task_result" 
-=begin
+
 		RestClient.post( url, 
 		  {
 		    :id => id,
 		    :test_result => result,
 		    :test_output => output} , { :api_key => ENV['ALFRED_API_KEY'] })
-=end		    
 	end
 
 	def execute_correction
@@ -79,8 +79,11 @@ class CorrectorApp
 		
 		if correction_data.empty?
 			@logger.info 'No pending tasks found.'
+			@is_idle = true
 			return
 		end
+
+		@is_idle = false
 
 		id = correction_data['id']
 
@@ -123,22 +126,21 @@ class CorrectorApp
 
 	def run_loop
 		@logger.info 'Starting working loop.'
-		is_idle = true
-		loop do
+		idle_counter = 0;
+		while (idle_counter < 5) do
 			sleep 1
-			if (is_idle)
-				is_idle = false
-				begin
-					@logger.info 'Task processing started.'
-					execute_correction
-					@logger.info 'Task successfully proccessed.'
-				rescue 
-					@logger.info "Task proccessing failed with errors: #{$!}\n"
-				ensure
-					@logger.info '-----------------------------'
-					@logger.info ' '
-					is_idle = true
-				end
+			if (@is_idle)
+				idle_counter+=1
+			end
+			begin
+				@logger.info 'Task processing started.'
+				execute_correction
+				@logger.info 'Task successfully proccessed.'
+			rescue 
+				@logger.info "Task proccessing failed with errors: #{$!}\n"
+			ensure
+				@logger.info '-----------------------------'
+				@logger.info ' '
 			end
 		end
 		@logger.info 'Finishing working loop.'
