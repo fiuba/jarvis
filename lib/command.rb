@@ -10,7 +10,7 @@ puts "Command output: #{cmd.output}"
 class Command
 
 	attr_accessor :statement
-	attr_reader :output
+	attr_accessor :output
 
 	def self.with_statement(a_statement)
 		command = Command.new
@@ -21,7 +21,9 @@ class Command
 	def execute 
 		puts "about executing: #{statement}"
 		@output = `#{statement}`
-		$?.success?
+		result = $?.success?
+		puts result
+		result
 	end
 
 end
