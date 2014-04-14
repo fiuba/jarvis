@@ -5,7 +5,6 @@ require_relative './dropbox_downloader_command.rb'
 require 'json'
 require 'securerandom'
 require 'logger'
-require 'debugger'
 
 class CorrectorApp
 
