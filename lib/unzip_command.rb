@@ -10,12 +10,12 @@ class UnzipCommand < Command
 		command
 	end
 
-	def execute 
+	def execute( actions_set= {} )
 		self.statement = "unzip -o #{zip_file_name}"
 		if (!self.target_dir.nil?)
 			self.statement += " -d #{self.target_dir}"
 		end
-		super
+		super( actions_set )
 	end
 
 end
