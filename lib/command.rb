@@ -24,7 +24,9 @@ class Command
 		@output = `#{statement}`
 		result = $?.success?
 
-		grab_action( actions_set, :after).call( "#{@output.gsub( /\n/, '.')}" )
+    @output.split(/\n/).each do |line|
+		  grab_action( actions_set, :after ).call( "#{line}" )
+    end
 
 		result
 	end

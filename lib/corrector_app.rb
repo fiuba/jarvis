@@ -25,7 +25,7 @@ class CorrectorApp
 
 	def get_and_unzip_file(id, file_path, target_file_name)
 		cmd = Command.with_statement("mkdir -p #{id}")
-		cmd_result = cmd.execute( default_action_set )
+		cmd_result = cmd.execute( default_actions_set )
 
 		@logger.info 'About downloading file'
 		@logger.info ENV['DROPBOX_APP_KEY']
@@ -37,15 +37,15 @@ class CorrectorApp
 
 		cmd = UnzipCommand.forFileNamed("#{id}/#{target_file_name}.zip")
 		cmd.target_dir = "#{id}"
-		cmd_result = cmd.execute( default_action_set )
+		cmd_result = cmd.execute( default_actions_set )
 	end
 
 	def prepare_pharo_image(id)
 		cmd = Command.with_statement("cp Pharo-2.image #{id}/Pharo-2.image")
-		cmd_result = cmd.execute( default_action_set )
+		cmd_result = cmd.execute( default_actions_set )
 
 		cmd = Command.with_statement("cp Pharo-2.changes #{id}/Pharo-2.changes")
-		cmd_result = cmd.execute( default_action_set )
+		cmd_result = cmd.execute( default_actions_set )
 
 		#cmd = Command.with_statement("cp PharoV20.sources #{id}/PharoV20.sources")
 		#cmd_result = cmd.execute
@@ -54,7 +54,7 @@ class CorrectorApp
 	def archive_files(id)
 		archive_dir_name = "old-#{id}-#{SecureRandom.uuid}"
 		cmd = Command.with_statement("mv #{id} #{archive_dir_name}")
-		cmd_result = cmd.execute( default_action_set )
+		cmd_result = cmd.execute( default_actions_set )
 	end
 
 	def report_result(id, result, output)
