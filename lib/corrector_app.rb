@@ -28,7 +28,7 @@ class CorrectorApp
 		cmd_result = cmd.execute( default_actions_set )
 
 		@logger.info 'About downloading file'
-		@logger.info ENV['DROPBOX_APP_KEY']
+		@logger.debug "Dropbox token: #{ENV['DROPBOX_APP_KEY']}"
 		# download solution file
 		cmd = DropboxDownloadCommand.forFileAt(file_path)
 		cmd_result = cmd.execute
