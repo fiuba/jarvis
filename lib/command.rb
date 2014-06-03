@@ -18,12 +18,26 @@ class Command
 		command
 	end
 
-	def execute 
-		puts "about executing: #{statement}"
+	def execute( actions_set = {} )
+		grab_action( actions_set, :before).call( "#{statement}" )
+
 		@output = `#{statement}`
 		result = $?.success?
-		puts result
+
+    @output.split(/\n/).each do |line|
+		  grab_action( actions_set, :after ).call( "#{line}" )
+    end
+
 		result
 	end
+
+  def default_action
+    Proc.new { |m| puts m }
+  end
+
+  private
+  def grab_action( actions_set, at )
+		(actions_set[at] || default_action )
+  end
 
 end
